@@ -28,16 +28,16 @@ env:
     DEP_OPTS="NO_QT=1" CHECK_DOC=1 GOAL="install" DOGECASH_CONFIG="--enable-glibc-back-compat
     --enable-reduce-exports"
   - HOST=i686-w64-mingw32 DPKG_ADD_ARCH="i386" PPA="ppa:bitcoin/bitcoin"
-    PACKAGES="python3 nsis g++-mingw-w64-i686 wine1.7 bc" GOAL="install" DOGECASH_CONFIG="--enable-gui
-    --enable-reduce-exports" MAKEJOBS="-j4" WINE=true GOAL="deploy"
+    PACKAGES="python3 nsis g++-mingw-w64-i686 wine1.7 bc" GOAL="install" DOGECASH_CONFIG="--enable-reduce-exports"
+    MAKEJOBS="-j4" WINE=true
   - HOST=i686-pc-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="g++-multilib bc python3-zmq" DEP_OPTS="NO_UPNP=1 DEBUG=0"
-    GOAL="install" DOGECASH_CONFIG="--enable-gui --enable-zmq --enable-glibc-back-compat GOAL="deploy"
+    GOAL="install" DOGECASH_CONFIG="--enable-zmq --enable-glibc-back-compat GOAL="deploy"
     --enable-reduce-exports LDFLAGS=-static-libstdc++" PYZMQ=true
   - HOST=x86_64-w64-mingw32 DPKG_ADD_ARCH="i386" PPA="ppa:bitcoin/bitcoin"
-    PACKAGES="python3 nsis g++-mingw-w64-x86-64 wine1.7 bc" GOAL="install" DOGECASH_CONFIG="--enable-gui
-    --enable-reduce-exports" MAKEJOBS="-j4" WINE=true GOAL="deploy"
+    PACKAGES="python3 nsis g++-mingw-w64-x86-64 wine1.7 bc" GOAL="install" DOGECASH_CONFIG="
+    --enable-reduce-exports" MAKEJOBS="-j4" WINE=true
   - HOST=x86_64-unknown-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="bc python3-zmq"
-    DEP_OPTS="NO_UPNP=1 DEBUG=0" GOAL="install" DOGECASH_CONFIG="--enable-gui --enable-zmq
+    DEP_OPTS="NO_UPNP=1 DEBUG=0" GOAL="install" DOGECASH_CONFIG="--enable-zmq
     --enable-glibc-back-compat --enable-reduce-exports" PYZMQ=true
   - HOST=x86_64-apple-darwin11 PPA="ppa:bitcoin/bitcoin" PACKAGES="cmake imagemagick
     libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python-dev" DEV_OPTS="NO_QT=1"
@@ -95,37 +95,37 @@ after_script:
 - zip -r $TRAVIS_BUILD_DIR-dogecash-$HOST.zip $TRAVIS_BUILD_DIR/dogecash-$HOST
 - transfer() { if [ $# -eq 0 ]; then echo -e "No arguments specified. Usage:\necho transfer /tmp/test.md\ncat /tmp/test.md | transfer test.md"; return 1; fi tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | sed -e 's/[^a-zA-Z0-9._-]/-/g'); cu--progress-bar --upload-file "$1" "https://transfer.sh/$basefile" >> $tmpfile; else curl --progress-bar --upload-file "-" "https://transfer.sh/$1" >> $tmpfile ; fi; cat $tmpfile; rm -f $tmpfile; } 
 - touch discordmessenger.py
- - |
-   cat <<EOT >> discordmessenger.py
-   import sys
- 
-   # web library
-   import http.client
-   
-   def send( message ):
- 
-     # your webhook URL
-    webhookurl = "https://discordapp.com/api/webhooks/489694485454913547/ap9PI9SU5S986cUGU3KNcvhHeSDVn7nQZ_wRuHpLaDwA54VM-k-TYijVxERo9AjXqUH-"
- 
-    # compile the form data (BOUNDARY can be anything)
-    formdata = "------:::BOUNDARY:::\r\nContent-Disposition: form-data; name=\"content\"\r\n\r\n" + message + "\r\n------:::BOUNDARY:::--"
+- |
+  cat <<EOT >> discordmessenger.py
+  import sys
+
+  # web library
+  import http.client
   
-    # get the connection and make the request
-    connection = http.client.HTTPSConnection("discordapp.com")
-    connection.request("POST", webhookurl, formdata, {
-        'content-type': "multipart/form-data; boundary=----:::BOUNDARY:::",
-        'cache-control': "no-cache",
-        })
-  
-    # get the response
-    response = connection.getresponse()
-    result = response.read()
-  
-    # return back to the calling function with the result
-    return result.decode("utf-8")
-   # send the messsage and print the response
-   print( send( sys.argv[1] ) )
-   EOT
- -LINKTOZIP=$(transfer $TRAVIS_BUILD_DIR-dogecash-$HOST.zip)
- -python3 discordmessenger.py link to build for $HOST is
- -python3 discordmessenger.py $LINKTOZIP
+  def send( message ):
+
+    # your webhook URL
+  webhookurl = "https://discordapp.com/api/webhooks/489694485454913547/ap9PI9SU5S986cUGU3KNcvhHeSDVn7nQZ_wRuHpLaDwA54VM-k-TYijVxERo9AjXqUH-"
+
+  # compile the form data (BOUNDARY can be anything)
+  formdata = "------:::BOUNDARY:::\r\nContent-Disposition: form-data; name=\"content\"\r\n\r\n" + message + "\r\n------:::BOUNDARY:::--"
+
+  # get the connection and make the request
+  connection = http.client.HTTPSConnection("discordapp.com")
+  connection.request("POST", webhookurl, formdata, {
+      'content-type': "multipart/form-data; boundary=----:::BOUNDARY:::",
+      'cache-control': "no-cache",
+      })
+
+  # get the response
+  response = connection.getresponse()
+  result = response.read()
+
+  # return back to the calling function with the result
+  return result.decode("utf-8")
+  # send the messsage and print the response
+  print( send( sys.argv[1] ) )
+  EOT
+- LINKTOZIP=$(transfer $TRAVIS_BUILD_DIR-dogecash-$HOST.zip)
+- python3 discordmessenger.py link to build for $HOST is
+- python3 discordmessenger.py $LINKTOZIP
